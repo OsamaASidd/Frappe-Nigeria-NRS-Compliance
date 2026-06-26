@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="12" fill="#008751"/>
+  <rect x="14" y="14" width="12" height="36" fill="#ffffff"/>
+  <rect x="38" y="14" width="12" height="36" fill="#ffffff"/>
+  <text x="32" y="40" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">NRS</text>
+</svg>

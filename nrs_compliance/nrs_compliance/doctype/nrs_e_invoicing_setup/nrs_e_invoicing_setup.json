@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-06-27 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "reference_data_section",
+  "sync_reference_data",
+  "column_break_ref",
+  "tax_categories_retrieved",
+  "reference_data_synced_at",
+  "connection_section",
+  "test_connection",
+  "column_break_conn",
+  "is_api_key_valid"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_data_section",
+   "fieldtype": "Section Break",
+   "label": "Reference Data"
+  },
+  {
+   "description": "Fetch FIRS tax categories (and other lookups) from the Cryptware API using the default Company's NRS credentials.",
+   "fieldname": "sync_reference_data",
+   "fieldtype": "Button",
+   "label": "Sync Reference Data"
+  },
+  {
+   "fieldname": "column_break_ref",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "tax_categories_retrieved",
+   "fieldtype": "Check",
+   "label": "Tax Categories Retrieved",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_data_synced_at",
+   "fieldtype": "Datetime",
+   "label": "Last Synced At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "connection_section",
+   "fieldtype": "Section Break",
+   "label": "Connection"
+  },
+  {
+   "description": "Verify the default Company's API key against the Cryptware FIRS API.",
+   "fieldname": "test_connection",
+   "fieldtype": "Button",
+   "label": "Test Connection"
+  },
+  {
+   "fieldname": "column_break_conn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_api_key_valid",
+   "fieldtype": "Check",
+   "label": "Is API Key Valid",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-06-27 00:00:00.000000",
+ "modified_by": "osama.siddiqui2017@gmail.com",
+ "module": "NRS Compliance",
+ "name": "NRS E-Invoicing Setup",
+ "owner": "osama.siddiqui2017@gmail.com",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

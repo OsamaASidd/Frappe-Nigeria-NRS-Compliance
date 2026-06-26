@@ -1,0 +1,134 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"nrs_header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>NRS Compliance</b></span>\",\"col\":12}},{\"id\":\"nrs_spacer1\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"nrs_setup_card\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}},{\"id\":\"nrs_txn_card\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"nrs_monitor_card\",\"type\":\"card\",\"data\":{\"card_name\":\"Monitoring\",\"col\":4}}]",
+ "creation": "2026-06-27 00:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "file",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "NRS Compliance",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setup",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "NRS E-Invoicing Setup",
+   "link_count": 0,
+   "link_to": "NRS E-Invoicing Setup",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "FIRS Tax Category",
+   "link_count": 0,
+   "link_to": "FIRS Tax Category",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transactions",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Invoice",
+   "link_count": 0,
+   "link_to": "Sales Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 0,
+   "link_to": "Customer",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Monitoring",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "NRS Queue",
+   "link_count": 0,
+   "link_to": "NRS Queue",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "NRS Logs",
+   "link_count": 0,
+   "link_to": "NRS Logs",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-06-27 00:00:00.000000",
+ "modified_by": "osama.siddiqui2017@gmail.com",
+ "module": "NRS Compliance",
+ "name": "NRS Compliance",
+ "owner": "osama.siddiqui2017@gmail.com",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Green",
+   "doc_view": "",
+   "label": "NRS E-Invoicing Setup",
+   "link_to": "NRS E-Invoicing Setup",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "NRS Queue",
+   "link_to": "NRS Queue",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "NRS Logs",
+   "link_to": "NRS Logs",
+   "type": "DocType"
+  }
+ ],
+ "title": "NRS Compliance"
+}
