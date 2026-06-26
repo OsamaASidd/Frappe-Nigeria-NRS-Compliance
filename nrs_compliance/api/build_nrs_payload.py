@@ -15,17 +15,25 @@ Design notes
 import re
 
 import frappe
-from frappe.utils import flt, get_datetime
+from frappe.utils import flt, getdate
 
 
-def _to_dt(date, time=None):
-    if not date:
+def _date(value):
+    """FIRS expects plain calendar dates as YYYY-MM-DD."""
+    if not value:
         return None
-    raw = f"{date} {time}" if time else str(date)
     try:
-        return get_datetime(raw).isoformat()
+        return getdate(value).strftime("%Y-%m-%d")
     except Exception:
-        return get_datetime(str(date)).isoformat()
+        return str(value)[:10]
+
+
+def _time(value):
+    """FIRS issue_time as HH:MM:SS."""
+    if not value:
+        return "00:00:00"
+    text = str(value)
+    return text[:8] if len(text) >= 8 else text
 
 
 def _normalize_phone(value):
@@ -87,6 +95,27 @@ def _primary_address(link_doctype, link_name):
     }
 
 
+def _normalize_tax_category(cat, percent):
+    """Map a FIRS Tax Category to one of the API's accepted tax_category_id enums.
+
+    Honours an explicit valid value; otherwise falls back by rate so the payload
+    always carries a recognised category.
+    """
+    if cat in VALID_TAX_CATEGORIES:
+        return cat
+    return "STANDARD_VAT" if flt(percent) > 0 else "ZERO_VAT"
+
+
+def _format_hsn(value):
+    """Coerce an HSN/HS code to the FIRS 0000.00 format; placeholder if unusable."""
+    digits = re.sub(r"\D", "", str(value or ""))
+    if len(digits) >= 6:
+        return f"{digits[:4]}.{digits[4:6]}"
+    if len(digits) >= 4:
+        return f"{digits[:4]}.{digits[4:].ljust(2, '0')[:2]}"
+    return PLACEHOLDER_HSN
+
+
 def _line_tax(row):
     """Return (tax_category_id, tax_percent) for an invoice line.
 
@@ -112,6 +141,28 @@ def _item_tax_template_rate(template):
     return 0.0
 
 
+# Placeholder values used when the Customer record is missing data that FIRS
+# requires as a (valid, non-empty) string. Keeps sample/test invoices flowing
+# without having to fully populate every customer field.
+# FIRS-accepted tax category identifiers (sent as tax_category_id).
+VALID_TAX_CATEGORIES = {
+    "STANDARD_VAT", "REDUCED_VAT", "ZERO_VAT",
+    "STANDARD_GST", "REDUCED_GST", "ZERO_GST",
+}
+
+PLACEHOLDER_HSN = "9983.00"  # FIRS requires HSN as 0000.00; 9983 = business services
+PLACEHOLDER_TIN = "00000000-0001"
+PLACEHOLDER_EMAIL = "customer@example.com"
+PLACEHOLDER_PHONE = "+2348000000000"
+PLACEHOLDER_BUSINESS = "General goods and services"
+PLACEHOLDER_ADDRESS = {
+    "street_name": "1 Marina Road",
+    "city_name": "Lagos",
+    "postal_zone": "100001",
+    "country": "NG",
+}
+
+
 def _customer_block(doc):
     cust = (
         frappe.db.get_value(
@@ -122,19 +173,23 @@ def _customer_block(doc):
         )
         or {}
     )
-    block = {
-        "party_name": cust.get("customer_name") or doc.customer_name or doc.customer,
-        "tin": cust.get("tax_id") or "",
-        "email": cust.get("email_id") or doc.get("contact_email") or "",
-        "business_description": cust.get("custom_nrs_business_description") or "",
+
+    address = _primary_address("Customer", doc.customer) or {}
+    postal_address = {
+        "street_name": address.get("street_name") or PLACEHOLDER_ADDRESS["street_name"],
+        "city_name": address.get("city_name") or PLACEHOLDER_ADDRESS["city_name"],
+        "postal_zone": address.get("postal_zone") or PLACEHOLDER_ADDRESS["postal_zone"],
+        "country": address.get("country") or PLACEHOLDER_ADDRESS["country"],
     }
-    phone = _normalize_phone(cust.get("mobile_no") or doc.get("contact_mobile"))
-    if phone:
-        block["telephone"] = phone
-    address = _primary_address("Customer", doc.customer)
-    if address:
-        block["postal_address"] = address
-    return block
+
+    return {
+        "party_name": cust.get("customer_name") or doc.customer_name or doc.customer,
+        "tin": cust.get("tax_id") or PLACEHOLDER_TIN,
+        "email": cust.get("email_id") or doc.get("contact_email") or PLACEHOLDER_EMAIL,
+        "telephone": _normalize_phone(cust.get("mobile_no") or doc.get("contact_mobile")) or PLACEHOLDER_PHONE,
+        "business_description": cust.get("custom_nrs_business_description") or PLACEHOLDER_BUSINESS,
+        "postal_address": postal_address,
+    }
 
 
 def _credit_note_reference(doc):
@@ -151,7 +206,7 @@ def _credit_note_reference(doc):
         return None
     return {
         "original_irn": info["custom_nrs_irn"],
-        "original_issue_date": _to_dt(info.get("posting_date"), info.get("posting_time")),
+        "original_issue_date": _date(info.get("posting_date")),
     }
 
 
@@ -163,11 +218,14 @@ def build_invoice_payload(sales_invoice_name):
 
 def build_payload(doc):
     is_credit_note = bool(getattr(doc, "is_return", 0))
-    invoice_type_code = "381" if is_credit_note else "380"
+    # FIRS invoice type codes (from /reference-data/invoice-types):
+    #   380 = Credit Note, 381 = Commercial Invoice (standard), 384 = Debit Note.
+    invoice_type_code = "380" if is_credit_note else "381"
     currency = doc.currency or "NGN"
 
     customer = _customer_block(doc)
-    transaction_category = "B2B" if customer.get("tin") else "B2C"
+    real_tin = frappe.db.get_value("Customer", doc.customer, "tax_id")
+    transaction_category = "B2B" if real_tin else "B2C"
 
     lines = []
     total_line_ext = 0.0
@@ -179,12 +237,13 @@ def build_payload(doc):
         rate_each = abs(flt(row.get("net_rate") or row.get("rate")))
         qty = abs(flt(row.qty)) or 1
         cat_id, percent = _line_tax(row)
+        cat_id = _normalize_tax_category(cat_id, percent)
         tax_amt = round(line_ext * percent / 100.0, 2)
 
         lines.append(
             {
                 "description": row.get("description") or row.get("item_name") or row.get("item_code"),
-                "hsn_code": row.get("custom_nrs_hsn_code") or "",
+                "hsn_code": _format_hsn(row.get("custom_nrs_hsn_code")),
                 "product_category": row.get("item_group") or "",
                 "invoiced_quantity": qty,
                 "price_amount": rate_each,
@@ -224,7 +283,8 @@ def build_payload(doc):
         "invoice_type": "STANDARD",
         "transaction_category": transaction_category,
         "document_identifier": doc.name,
-        "issue_date": _to_dt(doc.posting_date, doc.get("posting_time")),
+        "issue_date": _date(doc.posting_date),
+        "issue_time": _time(doc.get("posting_time")),
         "invoice_type_code": invoice_type_code,
         "document_currency_code": currency,
         "tax_currency_code": currency,
@@ -239,7 +299,7 @@ def build_payload(doc):
     }
 
     if doc.get("due_date"):
-        payload["due_date"] = _to_dt(doc.due_date)
+        payload["due_date"] = _date(doc.due_date)
     note = (doc.get("remarks") or "").strip()
     if note and note.lower() != "no remarks":
         payload["note"] = note
