@@ -27,7 +27,7 @@ CUSTOM_FIELDS = {
             "fieldname": "custom_nrs_tab",
             "fieldtype": "Tab Break",
             "label": "NRS E-Invoicing",
-            "insert_after": "tax_id",
+            "insert_after": "default_operating_cost_account",
         },
         {
             "fieldname": "custom_nrs_enabled",
@@ -102,7 +102,7 @@ CUSTOM_FIELDS = {
             "fieldname": "custom_nrs_tab",
             "fieldtype": "Tab Break",
             "label": "NRS E-Invoicing",
-            "insert_after": "tax_id",
+            "insert_after": "remarks",
         },
         {
             "fieldname": "custom_submit_to_nrs",
