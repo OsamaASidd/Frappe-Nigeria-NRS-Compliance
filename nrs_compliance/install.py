@@ -17,6 +17,18 @@ def install_custom_fields():
     Idempotent: create_custom_fields updates existing fields in place.
     """
     create_custom_fields(CUSTOM_FIELDS, ignore_validate=True)
+    _remove_obsolete_fields()
+
+
+def _remove_obsolete_fields():
+    """Drop custom fields replaced by newer ones."""
+    obsolete = [
+        ("Sales Invoice", "custom_nrs_qr"),  # split into custom_qr_code + custom_qr_code_url
+    ]
+    for dt, fieldname in obsolete:
+        name = frappe.db.get_value("Custom Field", {"dt": dt, "fieldname": fieldname})
+        if name:
+            frappe.delete_doc("Custom Field", name, ignore_permissions=True)
 
 
 # Scope note: only Sales Invoice (and its return = Credit Note) is targeted.
@@ -142,12 +154,21 @@ CUSTOM_FIELDS = {
             "insert_after": "custom_nrs_column_break",
         },
         {
-            "fieldname": "custom_nrs_qr",
+            "fieldname": "custom_qr_code",
             "fieldtype": "Small Text",
-            "label": "NRS QR / Signed Data",
+            "label": "NRS QR Code (Signed Data)",
             "read_only": 1,
             "allow_on_submit": 1,
             "insert_after": "custom_nrs_datetime",
+        },
+        {
+            "fieldname": "custom_qr_code_url",
+            "fieldtype": "Data",
+            "options": "URL",
+            "label": "NRS QR Code URL",
+            "read_only": 1,
+            "allow_on_submit": 1,
+            "insert_after": "custom_qr_code",
         },
         {
             "fieldname": "custom_nrs_response",
@@ -155,7 +176,7 @@ CUSTOM_FIELDS = {
             "label": "NRS Response",
             "read_only": 1,
             "allow_on_submit": 1,
-            "insert_after": "custom_nrs_qr",
+            "insert_after": "custom_qr_code_url",
         },
     ],
     "Sales Invoice Item": [

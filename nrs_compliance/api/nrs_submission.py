@@ -47,6 +47,16 @@ def _extract_qr(data):
     return ""
 
 
+def _extract_qr_url(data):
+    if not isinstance(data, dict):
+        return ""
+    payload = data.get("data") if isinstance(data.get("data"), dict) else data
+    for key in ("qr_code_url", "qrCodeUrl", "qr_url", "qrUrl"):
+        if payload.get(key):
+            return str(payload[key])
+    return ""
+
+
 # --- on_submit hook ----------------------------------------------------
 def submit_invoice_on_submit(doc, method=None):
     """Queue the invoice for FIRS submission when 'Submit to NRS' is ticked."""
@@ -206,7 +216,10 @@ def persist_response_fields(doctype, docname, result):
             values["custom_nrs_datetime"] = now()
         qr = _extract_qr(response)
         if qr:
-            values["custom_nrs_qr"] = qr
+            values["custom_qr_code"] = qr
+        qr_url = _extract_qr_url(response)
+        if qr_url:
+            values["custom_qr_code_url"] = qr_url
 
         frappe.db.set_value(doctype, docname, values, update_modified=False)
     except Exception as e:
