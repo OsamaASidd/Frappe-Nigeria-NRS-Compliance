@@ -26,7 +26,7 @@ add_to_apps_screen = [
 # POS Invoice is intentionally NOT handled.
 doc_events = {
     "Company": {
-        "validate": "nrs_compliance.utils.set_company_base_url",
+        "validate": "nrs_compliance.utils.sync_company_nrs_config",
     },
     "Sales Invoice": {
         "validate": "nrs_compliance.api.nrs_validation.validate_nrs_fields",

@@ -31,12 +31,25 @@ def get_nrs_base_url(company=None):
     return SANDBOX_BASE_URL
 
 
-def set_company_base_url(doc, method=None):
-    """Keep the read-only API Base URL field in sync with the Environment."""
+def sync_company_nrs_config(doc, method=None):
+    """Keep NRS config coherent with the selected Environment.
+
+    - API Base URL (read-only) mirrors the environment.
+    - The API key is cleared whenever the environment changes, since sandbox
+      and production use different keys.
+    """
     if not doc.meta.has_field("custom_nrs_api_base_url"):
         return
     env = (doc.get("custom_nrs_environment") or "").strip().lower()
     doc.custom_nrs_api_base_url = PRODUCTION_BASE_URL if env == "production" else SANDBOX_BASE_URL
+
+    before = doc.get_doc_before_save() if not doc.is_new() else None
+    if before and before.get("custom_nrs_environment") != doc.get("custom_nrs_environment"):
+        doc.custom_nrs_api_key = ""
+
+
+# Backwards-compatible alias (previous hook target).
+set_company_base_url = sync_company_nrs_config
 
 
 def get_nrs_api_key(company=None):
