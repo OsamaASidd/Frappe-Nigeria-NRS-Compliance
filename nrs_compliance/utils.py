@@ -1,6 +1,8 @@
 import frappe
 
-DEFAULT_BASE_URL = "https://api.cryptwaresystemsltd.com"
+# Cryptware FIRS API endpoints, selected by the Company's NRS environment.
+SANDBOX_BASE_URL = "https://preprod-api.cryptwaresystemsltd.com"
+PRODUCTION_BASE_URL = "https://api.cryptwaresystemsltd.com"
 
 
 def get_default_company():
@@ -15,11 +17,26 @@ def _resolve_company(company=None):
 
 
 def get_nrs_base_url(company=None):
+    """Resolve the API base URL from the Company's NRS environment.
+
+    Sandbox    -> https://preprod-api.cryptwaresystemsltd.com
+    Production -> https://api.cryptwaresystemsltd.com
+    """
     company = _resolve_company(company)
-    url = None
+    environment = None
     if company:
-        url = frappe.db.get_value("Company", company, "custom_nrs_api_base_url")
-    return (url or DEFAULT_BASE_URL).rstrip("/")
+        environment = frappe.db.get_value("Company", company, "custom_nrs_environment")
+    if (environment or "").strip().lower() == "production":
+        return PRODUCTION_BASE_URL
+    return SANDBOX_BASE_URL
+
+
+def set_company_base_url(doc, method=None):
+    """Keep the read-only API Base URL field in sync with the Environment."""
+    if not doc.meta.has_field("custom_nrs_api_base_url"):
+        return
+    env = (doc.get("custom_nrs_environment") or "").strip().lower()
+    doc.custom_nrs_api_base_url = PRODUCTION_BASE_URL if env == "production" else SANDBOX_BASE_URL
 
 
 def get_nrs_api_key(company=None):

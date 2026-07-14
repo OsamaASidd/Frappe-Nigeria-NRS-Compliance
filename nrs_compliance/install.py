@@ -54,13 +54,15 @@ CUSTOM_FIELDS = {
             "label": "Environment",
             "options": "Sandbox\nProduction",
             "default": "Sandbox",
+            "description": "Sandbox -> https://preprod-api.cryptwaresystemsltd.com | Production -> https://api.cryptwaresystemsltd.com",
             "insert_after": "custom_nrs_enabled",
         },
         {
             "fieldname": "custom_nrs_api_base_url",
             "fieldtype": "Data",
             "label": "API Base URL",
-            "default": "https://api.cryptwaresystemsltd.com",
+            "read_only": 1,
+            "description": "Auto-set from the selected Environment.",
             "insert_after": "custom_nrs_environment",
         },
         {

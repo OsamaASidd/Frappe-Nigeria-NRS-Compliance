@@ -32,7 +32,11 @@ bench --site <your-site> install-app nrs_compliance
 ## Configuration
 
 1. Open the **Company** form → **NRS E-Invoicing** tab.
-2. Tick **Enable NRS E-Invoicing**, set the **API Base URL** and **API Key**.
+2. Tick **Enable NRS E-Invoicing**, choose the **Environment** (Sandbox or
+   Production), and set the **API Key**. The API base URL is derived from the
+   environment automatically:
+   - Sandbox → `https://preprod-api.cryptwaresystemsltd.com`
+   - Production → `https://api.cryptwaresystemsltd.com`
 3. From **NRS E-Invoicing Setup**, click **Sync Reference Data** to pull tax
    categories and other lookups.
 4. On a Sales Invoice, tick **Submit to NRS** and submit the document — it is

@@ -25,6 +25,9 @@ add_to_apps_screen = [
 # is_return = 1, so it flows through the same hooks (invoice_type_code 381).
 # POS Invoice is intentionally NOT handled.
 doc_events = {
+    "Company": {
+        "validate": "nrs_compliance.utils.set_company_base_url",
+    },
     "Sales Invoice": {
         "validate": "nrs_compliance.api.nrs_validation.validate_nrs_fields",
         "before_submit": "nrs_compliance.api.nrs_validation.validate_before_submit",
@@ -36,6 +39,7 @@ doc_events = {
 
 doctype_js = {
     "Sales Invoice": "public/js/sales_invoice.js",
+    "Company": "public/js/company.js",
 }
 
 doctype_list_js = {
