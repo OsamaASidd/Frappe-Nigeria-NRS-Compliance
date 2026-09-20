@@ -12,10 +12,20 @@ Design notes
   original invoice IRN.
 """
 
+import html
 import re
 
 import frappe
-from frappe.utils import flt, getdate
+from frappe.utils import flt, getdate, strip_html_tags
+
+
+def _clean_text(value):
+    """Plain-text a rich-text/HTML field: strip tags, unescape entities, collapse whitespace."""
+    if not value:
+        return ""
+    text = strip_html_tags(str(value))
+    text = html.unescape(text)
+    return " ".join(text.split())
 
 
 def _date(value):
@@ -242,13 +252,13 @@ def build_payload(doc):
 
         lines.append(
             {
-                "description": row.get("description") or row.get("item_name") or row.get("item_code"),
+                "description": _clean_text(row.get("description")) or row.get("item_name") or row.get("item_code"),
                 "hsn_code": _format_hsn(row.get("custom_nrs_hsn_code")),
                 "product_category": row.get("item_group") or "",
                 "invoiced_quantity": qty,
                 "price_amount": rate_each,
                 "base_quantity": 1,
-                "price_unit": f"{currency} per {row.get('uom') or row.get('stock_uom') or 'unit'}",
+                "price_unit": row.get("uom") or "",
                 "discount_amount": abs(flt(row.get("discount_amount") or 0.0)),
                 "line_extension_amount": round(line_ext, 2),
                 "tax_amount": tax_amt,
