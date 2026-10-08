@@ -258,7 +258,7 @@ def build_payload(doc):
                 "invoiced_quantity": qty,
                 "price_amount": rate_each,
                 "base_quantity": 1,
-                "price_unit": row.get("uom") or "",
+                "price_unit": row.get("custom_nrs_uom") or "",
                 "discount_amount": abs(flt(row.get("discount_amount") or 0.0)),
                 "line_extension_amount": round(line_ext, 2),
                 "tax_amount": tax_amt,

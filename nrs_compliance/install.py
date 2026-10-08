@@ -232,5 +232,27 @@ CUSTOM_FIELDS = {
             "label": "FIRS Service Code",
             "insert_after": "custom_nrs_tax_category",
         },
+        {
+            "fieldname": "custom_nrs_uom",
+            "fieldtype": "Link",
+            "label": "NRS UOM",
+            "options": "NRS UOM",
+            "reqd": 1,
+            "insert_after": "custom_nrs_service_code",
+        },
     ],
 }
+
+# The NRS UOM used in the FIRS payload. Lives on the Sales Invoice Item row,
+# fetched from the Item's mandatory NRS UOM.
+CUSTOM_FIELDS["Sales Invoice Item"].append(
+    {
+        "fieldname": "custom_nrs_uom",
+        "fieldtype": "Link",
+        "label": "NRS UOM",
+        "options": "NRS UOM",
+        "fetch_from": "item_code.custom_nrs_uom",
+        "fetch_if_empty": 1,
+        "insert_after": "custom_nrs_tax_category",
+    }
+)

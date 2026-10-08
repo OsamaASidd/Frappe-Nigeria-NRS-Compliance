@@ -67,3 +67,8 @@ after_migrate = "nrs_compliance.install.after_migrate"
 
 # Backup hook - include NRS data in backups
 include_in_backup = ["NRS Logs", "NRS Queue"]
+
+# Fixtures shipped with the app (imported on install/migrate)
+fixtures = [
+    {"dt": "NRS UOM"},
+]
