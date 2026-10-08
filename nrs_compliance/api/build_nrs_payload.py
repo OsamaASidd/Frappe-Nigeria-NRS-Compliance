@@ -116,6 +116,14 @@ def _normalize_tax_category(cat, percent):
     return "STANDARD_VAT" if flt(percent) > 0 else "ZERO_VAT"
 
 
+def _line_uom(row):
+    """NRS UOM code for a line: the row's value, else the Item master's."""
+    uom = row.get("custom_nrs_uom")
+    if not uom and row.get("item_code"):
+        uom = frappe.db.get_value("Item", row.get("item_code"), "custom_nrs_uom")
+    return uom or ""
+
+
 def _format_hsn(value):
     """Coerce an HSN/HS code to the FIRS 0000.00 format; placeholder if unusable."""
     digits = re.sub(r"\D", "", str(value or ""))
@@ -258,7 +266,7 @@ def build_payload(doc):
                 "invoiced_quantity": qty,
                 "price_amount": rate_each,
                 "base_quantity": 1,
-                "price_unit": row.get("custom_nrs_uom") or "",
+                "price_unit": _line_uom(row),
                 "discount_amount": abs(flt(row.get("discount_amount") or 0.0)),
                 "line_extension_amount": round(line_ext, 2),
                 "tax_amount": tax_amt,
