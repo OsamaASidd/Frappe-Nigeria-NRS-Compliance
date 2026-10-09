@@ -132,6 +132,7 @@ CUSTOM_FIELDS = {
             "options": "\nPending\nValid\nInvalid\nError",
             "read_only": 1,
             "allow_on_submit": 1,
+            "no_copy": 1,
             "insert_after": "custom_submit_to_nrs",
         },
         {
@@ -140,6 +141,7 @@ CUSTOM_FIELDS = {
             "label": "NRS IRN",
             "read_only": 1,
             "allow_on_submit": 1,
+            "no_copy": 1,
             "insert_after": "custom_nrs_status",
         },
         {
@@ -153,6 +155,7 @@ CUSTOM_FIELDS = {
             "label": "NRS Submission Time",
             "read_only": 1,
             "allow_on_submit": 1,
+            "no_copy": 1,
             "insert_after": "custom_nrs_column_break",
         },
         {
@@ -161,6 +164,7 @@ CUSTOM_FIELDS = {
             "label": "NRS QR Code (Signed Data)",
             "read_only": 1,
             "allow_on_submit": 1,
+            "no_copy": 1,
             "insert_after": "custom_nrs_datetime",
         },
         {
@@ -170,6 +174,7 @@ CUSTOM_FIELDS = {
             "label": "NRS QR Code URL",
             "read_only": 1,
             "allow_on_submit": 1,
+            "no_copy": 1,
             "insert_after": "custom_qr_code",
         },
         {
@@ -178,6 +183,7 @@ CUSTOM_FIELDS = {
             "label": "NRS Response",
             "read_only": 1,
             "allow_on_submit": 1,
+            "no_copy": 1,
             "insert_after": "custom_qr_code_url",
         },
     ],
